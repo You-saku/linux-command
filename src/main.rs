@@ -11,7 +11,10 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Ls {},
+    Ls {
+        #[arg(short)]
+        a: bool,
+    },
 }
 
 fn is_not_hidden(entry: &DirEntry) -> bool {
@@ -22,26 +25,40 @@ fn is_not_hidden(entry: &DirEntry) -> bool {
         .unwrap_or(false)
 }
 
-fn read_dir() {
-    WalkDir::new(".")
-        .max_depth(1)
-        .into_iter()
-        .filter_entry(|e| is_not_hidden(e))
-        .filter_map(|v| v.ok())
-        .for_each(|x| {
-            let path_str: String = x.path().to_str().unwrap().replace("./", "");
-            match &*path_str {
-                "." => print!(""),
-                _ => println!("{path_str}"),
-            }
-        });
+fn read_dir(a: bool) {
+    if a {
+        WalkDir::new(".")
+            .max_depth(1)
+            .into_iter()
+            .filter_map(|v| v.ok())
+            .for_each(|x| {
+                let path_str: String = x.path().to_str().unwrap().replace("./", "");
+                match &*path_str {
+                    "." => print!(""),
+                    _ => println!("{path_str}"),
+                }
+            });
+    } else {
+        WalkDir::new(".")
+            .max_depth(1)
+            .into_iter()
+            .filter_entry(|e| is_not_hidden(e))
+            .filter_map(|v| v.ok())
+            .for_each(|x| {
+                let path_str: String = x.path().to_str().unwrap().replace("./", "");
+                match &*path_str {
+                    "." => print!(""),
+                    _ => println!("{path_str}"),
+                }
+            });
+    }
 }
 
 fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Some(Commands::Ls {}) => read_dir(),
+        Some(Commands::Ls { a }) => read_dir(*a),
         None => {
             println!("you sohuld enter command.")
         }
