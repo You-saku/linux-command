@@ -11,7 +11,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    Ls {
+    Rls {
         #[arg(short)]
         a: bool,
     },
@@ -58,7 +58,7 @@ fn main() {
     let cli = Cli::parse();
 
     match &cli.command {
-        Some(Commands::Ls { a }) => read_dir(*a),
+        Some(Commands::Rls { a }) => read_dir(*a),
         None => {
             println!("you sohuld enter command.")
         }
